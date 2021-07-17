@@ -68,3 +68,27 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `yarn build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Roadmap
+1. ~~Make request from browser~~
+2. ~~Save video urls to file~~
+3. ~~Fix CSS horizontal scroll~~
+4. ~~Allow arrows to control~~
+5. ~~Make sure video plays on initial load (opted to add controls instead)~~
+6. ~~Curate videos~~
+7. ~~Get rid of X of 10 label~~
+8. ~~Fix echo~~
+9. ~~Handle errors~~
+10. Move to AWS
+11. Record watched videos. Start w/ localstorage / cookies.
+12. Figure out broken videos. One example is 6982697321247018245.mp4
+13. Make it mobile friendly
+14. Log videos that have errored
+15. Favicon, title, and anything else from the existing site
+16. Finish curating videos
+17. ? - Make sure arrows always work. I think it's a focus issue.
+18. ? - Make tabs easier to see and select
+
+
+
+

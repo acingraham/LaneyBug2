@@ -1,5 +1,38 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .App {
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+.admin-player {
+  display: flex;
+  justify-content: center;
+  height: 80vh !important;
+}
+
+.button-section {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+}
+
+.button-section > button {
+  margin-right: 50px;
+  padding: 20px;
+}
+
+.carousel-root, .carousel, .slider-wrapper, .slider, .slide, .slide div, .slide video {
+  height: 80vh !important;
+  width: 100%;
 }
 
 .App-logo {
