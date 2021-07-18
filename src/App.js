@@ -123,8 +123,8 @@ function App() {
   const [videoList, setVideoList] = useState([]);
   useEffect(() => {
     async function fetchData() {
-      // const response = await fetch('LaneyBug2/videoList.json');
-      const response = await fetch('LaneyBug2/laney.json');
+      // const response = await fetch('videoList.json');
+      const response = await fetch('laney.json');
       const json = await response.json();
       setVideoList(json);
     }
