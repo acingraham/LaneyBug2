@@ -1,16 +1,21 @@
 const fs = require('fs');
+const videoListFilepath = '../../public/videoList.json';
 
-const arr = [];
-
-fs.readdir('./videos/', (err, files) => {
-  const data = files.map(file => `${file}`);
-
-  fs.writeFile('videoList.json', JSON.stringify(files), err => {
+fs.readdir('./videos/', (err, newFiles) => {
+  fs.readFile(videoListFilepath, 'utf-8', (err, existingFilesJson) => {
     if (err) {
       console.error(err);
     }
-  });
 
+    const existingFiles = JSON.parse(existingFilesJson);
+    const allFilesSet = new Set(newFiles.concat(existingFiles));
+
+    fs.writeFile(videoListFilepath, JSON.stringify(Array.from(allFilesSet)), err => {
+      if (err) {
+        console.error(err);
+      }
+    });
+  });
 });
 
 

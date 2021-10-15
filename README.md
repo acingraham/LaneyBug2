@@ -69,9 +69,22 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
+### Adding files workflow
+- Run `pip3 install --user TikTokApi` # Just needs to be done first time setting up. Figure out how to automate this.
+- Run `python -m playwright install` # Just needs to be done first time setting up. Figure out how to automate this.
+- `python3 scrape.py`
+- `ls.js` # Appends filenames in the videos directory into the videoList.json file and removes any duplicates
+
 ## Roadmap
 ### Next
+- Show different pages for /, /skip, /other, and /admin
+- Curate more videos
+- Automatically move liked tiktoks to project
+- Add history functions
+- Only show videos not previously seen
+
 - Move to AWS
+- Add favorites ability
 - Figure out broken videos. One example is 6982697321247018245.mp4
 - Make it mobile friendly
 - Log videos that have errored
@@ -84,6 +97,8 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - Record watched videos. Start w/ localstorage / cookies.
 - In full-screen, clicking arrows breaks things by moving to next video without exiting full screen
 - Implement wrap-around scroll
+- Fix/Add tests
+- Handle case when user clicks arrows while video is maximized
 
 ### Optional
 - Make sure arrows always work. I think it's a focus issue.

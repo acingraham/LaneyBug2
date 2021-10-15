@@ -15,14 +15,21 @@ user_name = 'andrew_404'
 # print(secuid);
 # user_id = 6820898474930897925
 # liked = api.user_liked_by_username(username=user_name, custom_verifyFp="")
-liked_videos = api.user_liked_by_username(username=user_name, count=2000)
-# pprint(liked[0])
+count = 10000
+liked_videos = api.user_liked_by_username(username=user_name, count=count)
+# pprint(liked_videos[0])
 # pprint(liked[0]['video'])
 # download_addr = liked[0]['video']['downloadAddr']
 # play_addr = liked]0['video']['playAddr']
 
+i = 0
+pprint(len(liked_videos))
 for liked_video in liked_videos:
+    i+=1
     try:
+        if i < (count - 4000):
+            # pprint(i)
+            continue
         author_id = liked_video['author']['uniqueId']
         video_id = liked_video['id']
 
@@ -46,7 +53,6 @@ for liked_video in liked_videos:
             binary_file.write(dl)
     except:
         print('an error :(')
-
 
 # trending = api.trending(count=results, custom_verifyFp="")
 # for tiktok in trending:
