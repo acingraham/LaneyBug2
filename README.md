@@ -77,11 +77,14 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ## Roadmap
 ### Next
+- Script to check what videos are not in s3 and then upload them
 - Show different pages for /, /skip, /other, and /admin
+- Set up lambda to add new tiktoks at a regular interval
 - Curate more videos
 - Automatically move liked tiktoks to project
 - Add history functions
 - Only show videos not previously seen
+- Add code pipeline so changes pushed to github automatically get propagated to site
 
 - Move to AWS
 - Add favorites ability
@@ -92,7 +95,6 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - Finish curating videos
 - Add documentation of the different processes and utility functions
 - Optimize storage costs
-- Set up lambda to add new tiktoks at a regular interval
 - Be able to review new tiktoks without running anything locally
 - Record watched videos. Start w/ localstorage / cookies.
 - In full-screen, clicking arrows breaks things by moving to next video without exiting full screen
