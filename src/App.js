@@ -65,66 +65,6 @@ function useLocalStorage(name) {
   };
 }
 
-/*
-function Admin({list}) {
-  const [index, setIndex] = useState(0);
-  const addToLaney = useLocalStorage('laney');
-  const addToSkip = useLocalStorage('skip');
-  const addToOther = useLocalStorage('other');
-
-  const laneyBug = () => {
-    addToLaney(list[index]);
-    setIndex(prev => prev + 1);
-  };
-  const skip = () => {
-    addToSkip(list[index]);
-    setIndex(prev => prev + 1);
-  };
-  const back = () => {
-    setIndex(prev => prev - 1);
-  };
-  const other = () => {
-    addToOther(list[index]);
-    setIndex(prev => prev + 1);
-  };
-  const onKeyPress = event => {
-    if (event.key === ' ') {
-      laneyBug();
-    } else if (event.key === 'o') {
-      other();
-    } else if (event.key === 'b') {
-      back();
-    }
-  };
-  const onError = (err, url) => {
-    if (err.type === 'error') {
-      skip();
-    }
-  };
-
-  return (
-    <div onKeyPress={onKeyPress}>
-      <div className="button-section">
-        <button onClick={laneyBug}>LaneyBug</button>
-        <button onClick={skip}>Skip</button>
-        <button onClick={back}>Back</button>
-        <button onClick={other}>Other</button>
-      </div>
-      <ReactPlayer
-        url={`https://laneybug.s3.amazonaws.com/videos/${list[index]}`}
-        controls
-        loop
-        height="auto"
-        width="auto"
-        playing={true}
-        onError={err => onError(err, list[index])}
-        className="admin-player"
-      />
-    </div>
-  );
-}
-*/
-
 function Admin() {
   const [index, setIndex] = useState(0);
   const addToLaney = useLocalStorage('laney');
@@ -135,9 +75,23 @@ function Admin() {
   const [videoList, setVideoList] = useState([]);
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch('videoList.json');
-      const json = await response.json();
-      setVideoList(json);
+      let response = await fetch('videoList.json');
+      let videoListJson = await response.json();
+
+      response = await fetch('laney.json');
+      const laneyJson = await response.json();
+
+      response = await fetch('skip.json');
+      const skipJson = await response.json();
+
+      response = await fetch('other.json');
+      const otherJson = await response.json();
+
+      const processedVideos = laneyJson.concat(skipJson, otherJson);
+      const processedVideosSet = new Set(processedVideos);
+      videoListJson = videoListJson.filter(video => !processedVideosSet.has(video));
+
+      setVideoList(videoListJson);
     }
     fetchData();
   }, []);
@@ -162,6 +116,7 @@ function Admin() {
     setIndex(prev => prev + 1);
   };
   const onKeyPress = event => {
+    console.log('keypress');
     if (event.key === ' ') {
       laneyBug();
     } else if (event.key === 'o') {
@@ -178,6 +133,7 @@ function Admin() {
 
   return (
     <div onKeyPress={onKeyPress}>
+      <div>{index} / {videoList.length}</div>
       <div className="button-section">
         <button onClick={laneyBug}>LaneyBug</button>
         <button onClick={skip}>Skip</button>
@@ -235,28 +191,5 @@ function App() {
     </Switch>
   );
 }
-
-/*
-function App() {
-  const [videoList, setVideoList] = useState([]);
-  useEffect(() => {
-    async function fetchData() {
-      // const response = await fetch('videoList.json');
-      const response = await fetch('laney.json');
-      const json = await response.json();
-      setVideoList(json);
-    }
-    fetchData();
-  }, []);
-
-  if (!videoList.length) {
-    return null;
-  }
-
-  // return <Admin list={videoList} />;
-
-  return <Player list={videoList} />;
-}
-*/
 
 export default App;
