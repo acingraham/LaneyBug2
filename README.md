@@ -81,10 +81,12 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - Show different pages for /, /skip, /other, and /admin
 - Set up lambda to add new tiktoks at a regular interval
 - Curate more videos
+- After curating more videos, push changes to github and make sure they propagate to live site
 - Automatically move liked tiktoks to project
 - Add history functions
 - Only show videos not previously seen
 - Add code pipeline so changes pushed to github automatically get propagated to site
+- BUG - In Admin, clicking a button will mean it's focused and hitting spacebar afterwards will trigger the same button
 
 - Move to AWS
 - Add favorites ability
