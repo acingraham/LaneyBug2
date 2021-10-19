@@ -22,6 +22,7 @@ function Player({list}) {
   // TODO - Handle bad urls better
   const rand = getRandom(list, 20);
   const [items, setItems] = useState(rand);
+  const addToHistory = useLocalStorage('history');
 
   const onError = (err, url) => {
     if (err.type === 'error') {
@@ -33,6 +34,14 @@ function Player({list}) {
       });
     }
   };
+
+  const onPlay = video => {
+    addToHistory({
+      video,
+      epochTime: Date.now(),
+    });
+  };
+
   return (
     <div className="App">
       <Carousel onChange={setSelectedIndex} showThumbs={false} useKeyboardArrows showStatus={false} autoFocus>
@@ -45,6 +54,7 @@ function Player({list}) {
             height="auto"
             width="auto"
             playing={index === selectedIndex}
+            onPlay={() => onPlay(url)}
             onError={err => onError(err, url)}
           />
         ))}
@@ -64,66 +74,6 @@ function useLocalStorage(name) {
     setArray(newArray);
   };
 }
-
-/*
-function Admin({list}) {
-  const [index, setIndex] = useState(0);
-  const addToLaney = useLocalStorage('laney');
-  const addToSkip = useLocalStorage('skip');
-  const addToOther = useLocalStorage('other');
-
-  const laneyBug = () => {
-    addToLaney(list[index]);
-    setIndex(prev => prev + 1);
-  };
-  const skip = () => {
-    addToSkip(list[index]);
-    setIndex(prev => prev + 1);
-  };
-  const back = () => {
-    setIndex(prev => prev - 1);
-  };
-  const other = () => {
-    addToOther(list[index]);
-    setIndex(prev => prev + 1);
-  };
-  const onKeyPress = event => {
-    if (event.key === ' ') {
-      laneyBug();
-    } else if (event.key === 'o') {
-      other();
-    } else if (event.key === 'b') {
-      back();
-    }
-  };
-  const onError = (err, url) => {
-    if (err.type === 'error') {
-      skip();
-    }
-  };
-
-  return (
-    <div onKeyPress={onKeyPress}>
-      <div className="button-section">
-        <button onClick={laneyBug}>LaneyBug</button>
-        <button onClick={skip}>Skip</button>
-        <button onClick={back}>Back</button>
-        <button onClick={other}>Other</button>
-      </div>
-      <ReactPlayer
-        url={`https://laneybug.s3.amazonaws.com/videos/${list[index]}`}
-        controls
-        loop
-        height="auto"
-        width="auto"
-        playing={true}
-        onError={err => onError(err, list[index])}
-        className="admin-player"
-      />
-    </div>
-  );
-}
-*/
 
 function Admin() {
   const [index, setIndex] = useState(0);
@@ -175,7 +125,12 @@ function Admin() {
       skip();
     }
   };
+  const onPlay = () => {
+    const video = videoList[index];
+    console.log('video', video, Date.now());
+  };
 
+  // TODO - Consider breaking ReactPlayer out into it's own component to be reused
   return (
     <div onKeyPress={onKeyPress}>
       <div className="button-section">
@@ -191,6 +146,7 @@ function Admin() {
         height="auto"
         width="auto"
         playing={true}
+        onPlay={onPlay}
         onError={err => onError(err, videoList[index])}
         className="admin-player"
       />
@@ -202,7 +158,6 @@ function View({file}) {
   const [videoList, setVideoList] = useState([]);
   useEffect(() => {
     async function fetchData() {
-      // const response = await fetch('videoList.json');
       const response = await fetch(file);
       const json = await response.json();
       setVideoList(json);
@@ -217,11 +172,37 @@ function View({file}) {
   return <Player list={videoList} />;
 }
 
+function History() {
+  const history = JSON.parse(localStorage.getItem('history')) || [];
+  return (
+    <div>
+      {history.reverse().map(({epochTime, video})=> (
+        <div>
+          <div>{(new Date(epochTime)).toDateString()}</div>
+          <div>
+            <ReactPlayer
+              url={`https://laneybug.s3.amazonaws.com/videos/${video}`}
+              controls
+              loop
+              height="auto"
+              width="auto"
+              className="admin-player"
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function App() {
   return (
     <Switch>
       <Route path="/" exact>
         <View file="laney.json" />
+      </Route>
+      <Route path="/history">
+        <History />
       </Route>
       <Route path="/other">
         <View file="other.json" />
@@ -235,28 +216,5 @@ function App() {
     </Switch>
   );
 }
-
-/*
-function App() {
-  const [videoList, setVideoList] = useState([]);
-  useEffect(() => {
-    async function fetchData() {
-      // const response = await fetch('videoList.json');
-      const response = await fetch('laney.json');
-      const json = await response.json();
-      setVideoList(json);
-    }
-    fetchData();
-  }, []);
-
-  if (!videoList.length) {
-    return null;
-  }
-
-  // return <Admin list={videoList} />;
-
-  return <Player list={videoList} />;
-}
-*/
 
 export default App;
