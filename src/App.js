@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { Carousel } from 'react-responsive-carousel';
-import {
-  Switch,
-  Route,
-} from 'react-router-dom';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import './App.css';
 
@@ -219,20 +215,7 @@ function View({file}) {
 
 function App() {
   return (
-    <Switch>
-      <Route path="/" exact>
-        <View file="laney.json" />
-      </Route>
-      <Route path="/other">
-        <View file="other.json" />
-      </Route>
-      <Route path="/skip">
-        <View file="skip.json" />
-      </Route>
-      <Route path="/admin">
-        <Admin />
-      </Route>
-    </Switch>
+    <View file="laney.json" />
   );
 }
 
