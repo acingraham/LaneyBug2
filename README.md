@@ -77,6 +77,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ### Deploying to gh-pages
 - Run `npm run deploy`
+- Note that you'll likely need to run an invalidation in the CloudFront console for changes to propagate
 
 ## Roadmap
 ### Next
@@ -90,7 +91,11 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - Only show videos not previously seen
 - Add code pipeline so changes pushed to github automatically get propagated to site
 - BUG - In Admin, clicking a button will mean it's focused and hitting spacebar afterwards will trigger the same button
+- Make invalidations in CloudFront automatic after code changes
+- Add trouble shooting guides
+- Get routing working in gh-pages url. Works locally and in prod, but not in the actual gh-pages site.
 
+- Make initial load of screen as fast as possible
 - Move to AWS
 - Add favorites ability
 - Figure out broken videos. One example is 6982697321247018245.mp4
