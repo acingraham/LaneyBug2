@@ -75,6 +75,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - `python3 scrape.py`
 - `ls.js` # Appends filenames in the videos directory into the videoList.json file and removes any duplicates
 
+### Deploying to gh-pages
+- Run `npm run deploy`
+
 ## Roadmap
 ### Next
 - Script to check what videos are not in s3 and then upload them
