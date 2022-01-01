@@ -25,7 +25,7 @@ function onSignIn(googleUser) {
       // adding google access token to Cognito credentials login map
       AWS.config.region = 'us-east-1'; 
       AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', // MAKE SURE YOU REPLACE THIS
+        IdentityPoolId: 'us-east-1:39469dae-8032-4bf7-bb03-456c2d1968cb', // MAKE SURE YOU REPLACE THIS
         Logins: {
           'accounts.google.com': authResult['id_token']
         }
