@@ -235,8 +235,3 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 http://laney-bug.com/
 
 
-Google
-    ClientID - 934914015863-16l8d98h298c138eqca115cf2l587k3a.apps.googleusercontent.com
-    Client Secret - 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
-
-

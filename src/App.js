@@ -14,6 +14,7 @@ import './App.css';
 const API_ENDPOINT = 'https://xrkgyvv5tk.execute-api.us-east-1.amazonaws.com/prod';
 const VIEW_ENDPOINT = `${API_ENDPOINT}/view`;
 const FAVORITE_ENDPOINT = `${API_ENDPOINT}/favorite`;
+const GROUP_ENDPOINT = `${API_ENDPOINT}/group`;
 
 function getRandom(list, count) {
   const set = new Set();
@@ -108,7 +109,7 @@ function Player({list}) {
     <div className="App">
       <Carousel onChange={setSelectedIndex} showThumbs={false} useKeyboardArrows showStatus={false} autoFocus>
         {items.slice(0, 10).map((url, index) => (
-          <div key={url}>
+          <div key={url} className="login-wrapper">
             {isInitialized && isSignedIn && <button onClick={signOut}>Log Out</button>}
             {isInitialized && !isSignedIn && <button onClick={signIn}>Log In</button>}
             <MyPlayer isSignedIn={isSignedIn} url={url} playing={index === selectedIndex} onError={onError} recordView={recordView} googleUser={googleUser}/>
@@ -183,37 +184,44 @@ function useLocalStorage(name) {
   };
 }
 
+function useS3(group) {
+  return url => {
+    console.log('recording group of', group, url);
+    fetch(GROUP_ENDPOINT, {
+      headers: {
+        "Content-type": "application/json"
+      },
+      method: 'PUT',
+      mode: 'cors',
+      body: JSON.stringify({
+        group,
+        // TODO - Should rename url to something else
+        url,
+      })
+    })
+      .then(res => res.json())
+      .then(data => console.log('SUCCESS', data))
+      .catch(err => console.log('ERROR', err));
+
+  };
+}
+
 function Admin() {
   const [index, setIndex] = useState(0);
-  const addToLaney = useLocalStorage('laney');
-  const addToSkip = useLocalStorage('skip');
-  const addToOther = useLocalStorage('other');
+  const addToMain = useS3('main');
+  const addToSkip = useS3('skip');
+  const addToOther = useS3('other');
 
   // TODO - Move this to a separate hook
   const [videoList, setVideoList] = useState([]);
   useEffect(() => {
     async function fetchData() {
       /*
-      let response = await fetch('https://laneybug.s3.amazonaws.com/group/new/data.json');
-      let videoListJson = await response.json();
-
-      response = await fetch('https://laneybug.s3.amazonaws.com/group/main/data.json');
-      const laneyJson = await response.json();
-
-      response = await fetch('https://laneybug.s3.amazonaws.com/group/skip/data.json');
-      const skipJson = await response.json();
-
-      response = await fetch('https://laneybug.s3.amazonaws.com/group/other/data.json');
-      const otherJson = await response.json();
-
-      const processedVideos = laneyJson.concat(skipJson, otherJson);
-      const processedVideosSet = new Set(processedVideos);
-      videoListJson = videoListJson.filter(video => !processedVideosSet.has(video));
-      setVideoList(videoListJson);
       */
 
       let response = await fetch('https://laneybug.s3.amazonaws.com/group/new/data.json');
       let videoListJson = await response.json();
+      console.log('vidoelist.length', videoListJson.length);
       setVideoList(videoListJson);
     }
     fetchData();
@@ -223,8 +231,8 @@ function Admin() {
     return null;
   }
 
-  const laneyBug = () => {
-    addToLaney(videoList[index]);
+  const main = () => {
+    addToMain(videoList[index]);
     setIndex(prev => prev + 1);
   };
   const skip = () => {
@@ -241,7 +249,7 @@ function Admin() {
   const onKeyPress = event => {
     console.log('keypress');
     if (event.key === ' ') {
-      laneyBug();
+      main();
     } else if (event.key === 'o') {
       other();
     } else if (event.key === 'b') {
@@ -258,7 +266,7 @@ function Admin() {
     <div onKeyPress={onKeyPress}>
       <div>{index} / {videoList.length}</div>
       <div className="button-section">
-        <button onClick={laneyBug}>LaneyBug</button>
+        <button onClick={main}>LaneyBug</button>
         <button onClick={skip}>Skip</button>
         <button onClick={back}>Back</button>
         <button onClick={other}>Other</button>
