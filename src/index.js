@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { GoogleAuthProvider } from './GoogleAuthProvider';
 
 import './index.css';
 import App from './App';
@@ -9,7 +10,9 @@ import reportWebVitals from './reportWebVitals';
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <App />
+      <GoogleAuthProvider>
+        <App />
+      </GoogleAuthProvider>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

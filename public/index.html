@@ -26,7 +26,14 @@
     -->
     <title>Laney Bug</title>
 
+    <!-- Google Client ID -->
+    <!--
+    <meta name="google-signin-scope" content="profile email">
     <meta name="google-signin-client_id" content="934914015863-16l8d98h298c138eqca115cf2l587k3a.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.2.19.min.js"></script>
+    <script src="scripts.js"></script>
+    -->
 
     <!-- Start Single Page Apps for GitHub Pages -->
     <script type="text/javascript">
@@ -55,81 +62,17 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>	
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.487.0.min.js"></script>
 
-    <div class="g-signin2" data-onsuccess="onSignIn"></div>
-    <a href="#" onclick="signOut();">Sign out</a>
-
-    <p id="log"></p>
-
-    <script>
-        var awsBucketName = '<AWS BUCKET NAME>';
-        var identityPoolId = '<Identity Pool ID>';
-        var region = '<Region>';
-
-        function onSignIn(googleUser) {
-
-            var profile = googleUser.getBasicProfile();
-            logMessage('Logged in.');
-            logMessage('Name: ' + profile.getName());
-            logMessage('Email: ' + profile.getEmail());
-
-            var id_token = googleUser.getAuthResponse().id_token;
-
-            getCognitoIdentityCredentials(id_token);
-        }
-
-        function signOut() {
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-                logMessage('User signed out.');
-                logMessage('');
-            })
-            .catch(err => console.log(err));
-        }
-
-        function getCognitoIdentityCredentials(id_token){
-            if(AWS.config.credentials != null)
-                AWS.config.credentials.clearCachedId();
-
-            // Add the Google access token to the Cognito credentials login map.
-            AWS.config.region = region;
-            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                IdentityPoolId: identityPoolId,
-                Logins: {
-                    'accounts.google.com': id_token
-                }
-            });
-
-            getAWSS3BucketObjects();
-        }
-
-        function getAWSS3BucketObjects(){
-            var s3 = new AWS.S3();
-
-            var params = {
-                Bucket: awsBucketName
-            };
-
-            s3.listObjects(params, function(err, data) {
-                if (err) console.log(err, err.stack);
-                else{
-                    logMessage('');
-                    logMessage('====== S3 Bucket Objects ======');
-                    data.Contents.forEach(element => {
-                        logMessage(element.Key);
-                    });
-                    logMessage('');
-                }
-            });
-        }
-
-        function logMessage(message){
-            $('#log').append(message + '</br>');
-        }
-    </script>
+    <!--
+    <div class="login-wrapper">
+      <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+      <p />
+      <button onclick="onSignOut()">Sign out</button>
+      <p />
+      <div id="viewer"></div>
+      <div id="output"></div>
+    </div>
+    -->
     <div id="root"></div>
     <!--
       This HTML file is a template.

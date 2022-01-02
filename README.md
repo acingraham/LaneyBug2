@@ -79,8 +79,80 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - Run `npm run deploy`
 - Note that you'll likely need to run an invalidation in the CloudFront console for changes to propagate
 
+## Architecture
+### DynamoDB Entities
+|           | PK                | SK                           |
+|-----------|-------------------|------------------------------|
+| Group     | GROUP#<groupname> | VIDEO#<s3objectname>         |
+| History   | USER#<username>   | DATETIME_HISTORY#<datetime>  |
+| Favorites | USER#<username>   | DATETIME_FAVORITE#<datetime> |
+
+### DynamoDB Examples
+
+### DynamoDB Access Patterns
+- Get videos in group. Query: "PK = GROUP#laney"
+  - NOTE - this could be for anonymous users
+- Get videos in group that are not in the user's history. Query TODO: "PK = GROUP#laney" (NOTE - this could be for authenticated users). QUESTION - Is history restricted to within a group?
+- Get history for user (potentially paginate by date). Query: "PK = USER#andrew AND BEGINS_WITH(SK, 'DATETIME_HISTORY#')". Should not be unique by user / datetime. Also, do you want the same object showing up in history multiple time? Maybe have it at an hour-level granularity or something? Or maybe day?
+- Get favorites for user (potentially paginate by date). Query: "PK = USER#andrew AND BEGINS_WITH(SK, 'DATETIME_FAVORITE#')". NOTE - We'll want this to be unique and probably not by user / datetime. It should be user / s3objectname. Do you need to worry about the group of the s3objectname?
+- Add video to group
+- Update video group (delete from one group and add to another)
+- Add favorite
+- Delete favorite
+- Share video?
+- TODO - admin access patterns
+
 ## Roadmap
 ### Next
+- Cognito w/ Amazon (and maybe Google?)
+- Step function for doing all the daily processing steps
+- How will you store and retrieve favorites?
+  - Dynamo?
+  - Do they need to be ordered by time of favoriting? Seems like they should be
+- How will you handle admin workflow?
+- Figure out Access-Control-Allow-Origin. Right now I think we have it configured to * when it should just be laney-bug.com, but I also want it to work during local development (localhost)
+- Reduce lambda's permissions
+- Cleanup execution role
+- Cleanup RDS stuff from covidnotificationservice
+- Make it so a user can only access their folder
+- Add MFA delete to s3 videos
+- Consider adding a check so only filenames in the /videos folder can be written elsewhere
+- Handle case where nothing loads. Turn wifi off to test. One issue is there will be lots of failed requests.
+- Light-mode / Dark-mode
+- Find tree component for history hierarchy https://reactjsexample.com/tag/tree/ . Maybe make it from scratch? https://blog.logrocket.com/comparing-react-tree-components/
+
+- Add justification for design
+- Add Dynamo
+    - Is there a way to identify a small set of random, unseen videos for the user completely on the backend? Might need extra services. If this is taking too long, just do it on the frontend for now.
+    - Create dynamodb instance and table(s)
+    - Update api to fetch from dynamodb
+    - Update api to update dynamodb
+    - Add small amount of migration data
+        - Write script to migrate data from laney.json to dynamodb (GROUP#laney) and migrate
+        - Try having frontend fetch laney video list from dynamodb
+        - Update script to migrate data from other json files (skip, other) to dynamodb and migrate
+        - Write script to migrate data from s3 bucket (or maybe videoList.json?) to dynamodb (GROUP#new if not in any of the other groups) and migrate
+    - Have site record viewed videos
+    - Only show not viewed videos
+    - Figure out how we want to uniquely identify user for now (probably will use federation in the future)
+    - Do full migration
+    - Remove json files (NOTE - I don't know if I should do this before updating admin to not use jsonfiles and localStorage)
+- Consider api gateway cache for retrieving json files. This could save on the read cost.
+- Lambda to add new tiktoks to s3
+- s3 events that add new objects to dynamodb GROUP#new
+- Change admin to use dynamodb
+  - Pull video list from GROUP#new
+  - Remove from GROUP#new and add to GROUP#<selection>. Could experiment with this being a transaction.
+- Add favorite functionality
+- Add logging and dashboards
+
+- Report script that checks data in all systems and identifies anything missing and reports on the state of things?
+
+- Consider moving error'd videos into a separate group for future investigation
+
+- Share video?
+- Create dev environment
+
 - Script to check what videos are not in s3 and then upload them
 - Show different pages for /, /skip, /other, and /admin
 - Set up lambda to add new tiktoks at a regular interval
@@ -111,6 +183,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - Implement wrap-around scroll
 - Fix/Add tests
 - Handle case when user clicks arrows while video is maximized
+- Add eslint. Maybe prettier if it's not already?
 
 ### Optional
 - Make sure arrows always work. I think it's a focus issue.
@@ -119,6 +192,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - Get rid of unnecessary app folder
 - Avoid having to prefix json requests w/ LaneyBug2
 - Turn into an app?
+- Create a cloudformation for this project for others to be able to create their own
 
 ### Complete
 - Make request from browser
@@ -130,5 +204,39 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - Get rid of X of 10 label
 - Fix echo
 - Handle errors
+
+/events
+    /kathy
+        /view
+            /aggregate.json
+            /2021
+                /01
+                    /01
+                        /video1.mp4
+        /favorite
+            /aggregate.json
+    /andrew
+/data (category, group, type, channel, section, topic, domain)
+    /laney (general, main, primary, approved, public)
+        /aggregate.json (data.json, output.json, summary.json)
+        /video1.mp4
+    /other (private, andrew, secondary, unapproved)
+        /aggregate.json
+    /skip
+    /error
+    /raw (new, unprocessed, needsReview) // This can be calculated from videos in the /videos folder but not in any of the json
+        /video2.mp4
+
+
+
+
+
+
+http://laney-bug.com/
+
+
+Google
+    ClientID - 934914015863-16l8d98h298c138eqca115cf2l587k3a.apps.googleusercontent.com
+    Client Secret - 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
 
 
