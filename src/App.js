@@ -15,6 +15,7 @@ const API_ENDPOINT = 'https://xrkgyvv5tk.execute-api.us-east-1.amazonaws.com/pro
 const VIEW_ENDPOINT = `${API_ENDPOINT}/view`;
 const FAVORITE_ENDPOINT = `${API_ENDPOINT}/favorite`;
 const GROUP_ENDPOINT = `${API_ENDPOINT}/group`;
+const AGGREGATE_GROUPS_ENDPOINT = `${API_ENDPOINT}/aggregategroups`;
 
 function getRandom(list, count) {
   const set = new Set();
@@ -101,7 +102,21 @@ function Player({list}) {
   const userId = 'andrew';
   const recordView = useRecordView(groupId, userId);
   const data = useGoogleAuth();
-  const {isInitialized, isSignedIn, signIn, signOut, googleUser} = data;
+  let {isInitialized, isSignedIn, signIn, signOut, googleUser} = data;
+
+  // TODO - Fix this hack
+  if (!isSignedIn) {
+    const laneyBugEmail = localStorage.getItem('laneybugemail');
+    console.log('laneybugemail', laneyBugEmail);
+    if (laneyBugEmail) {
+      isSignedIn = true;
+      googleUser = {
+        profileObj: {
+          email: laneyBugEmail,
+        }
+      };
+    }
+  }
 
   console.log('data', data);
 
@@ -110,8 +125,8 @@ function Player({list}) {
       <Carousel onChange={setSelectedIndex} showThumbs={false} useKeyboardArrows showStatus={false} autoFocus>
         {items.slice(0, 10).map((url, index) => (
           <div key={url} className="login-wrapper">
-            {isInitialized && isSignedIn && <button onClick={signOut}>Log Out</button>}
-            {isInitialized && !isSignedIn && <button onClick={signIn}>Log In</button>}
+            {false && isInitialized && isSignedIn && <button onClick={signOut}>Log Out</button>}
+            {false && isInitialized && !isSignedIn && <button onClick={signIn}>Log In</button>}
             <MyPlayer isSignedIn={isSignedIn} url={url} playing={index === selectedIndex} onError={onError} recordView={recordView} googleUser={googleUser}/>
           </div>
         ))}
@@ -121,6 +136,8 @@ function Player({list}) {
 }
 
 function MyPlayer({url, playing, onError, recordView, googleUser, isSignedIn}) {
+  console.log('isSignedIn', isSignedIn);
+  console.log('googleUser', googleUser);
   useEffect(() => {
     if (playing && isSignedIn) {
       recordView(url, googleUser.profileObj.email);
@@ -246,6 +263,18 @@ function Admin() {
     addToOther(videoList[index]);
     setIndex(prev => prev + 1);
   };
+  const process = () => {
+    fetch(AGGREGATE_GROUPS_ENDPOINT, {
+      headers: {
+        "Content-type": "application/json"
+      },
+      method: 'POST',
+      mode: 'cors',
+    })
+      .then(res => res.json())
+      .then(data => console.log('SUCCESS', data))
+      .catch(err => console.log('ERROR', err));
+  };
   const onKeyPress = event => {
     console.log('keypress');
     if (event.key === ' ') {
@@ -270,6 +299,7 @@ function Admin() {
         <button onClick={skip}>Skip</button>
         <button onClick={back}>Back</button>
         <button onClick={other}>Other</button>
+        <button onClick={process}>Process</button>
       </div>
       <ReactPlayer
         url={`https://laneybug.s3.amazonaws.com/videos/${videoList[index]}`}
